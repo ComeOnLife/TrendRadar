@@ -1,0 +1,629 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>热点新闻分析</title>
+        <style>
+            * { box-sizing: border-box; }
+            body { 
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+                margin: 0; 
+                padding: 16px; 
+                background: #fafafa;
+                color: #333;
+                line-height: 1.5;
+            }
+            
+            .container {
+                max-width: 600px;
+                margin: 0 auto;
+                background: white;
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+            }
+            
+            .header {
+                background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+                color: white;
+                padding: 32px 24px;
+                text-align: center;
+            }
+            
+            .header-title {
+                font-size: 22px;
+                font-weight: 700;
+                margin: 0 0 20px 0;
+            }
+            
+            .header-info {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 16px;
+                font-size: 14px;
+                opacity: 0.95;
+            }
+            
+            .info-item {
+                text-align: center;
+            }
+            
+            .info-label {
+                display: block;
+                font-size: 12px;
+                opacity: 0.8;
+                margin-bottom: 4px;
+            }
+            
+            .info-value {
+                font-weight: 600;
+                font-size: 16px;
+            }
+            
+            .content {
+                padding: 24px;
+            }
+            
+            .word-group {
+                margin-bottom: 40px;
+            }
+            
+            .word-group:first-child {
+                margin-top: 0;
+            }
+            
+            .word-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 20px;
+                padding-bottom: 8px;
+                border-bottom: 1px solid #f0f0f0;
+            }
+            
+            .word-info {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+            
+            .word-name {
+                font-size: 17px;
+                font-weight: 600;
+                color: #1a1a1a;
+            }
+            
+            .word-count {
+                color: #666;
+                font-size: 13px;
+                font-weight: 500;
+            }
+            
+            .word-count.hot { color: #dc2626; font-weight: 600; }
+            .word-count.warm { color: #ea580c; font-weight: 600; }
+            
+            .word-index {
+                color: #999;
+                font-size: 12px;
+            }
+            
+            .news-item {
+                margin-bottom: 20px;
+                padding: 16px 0;
+                border-bottom: 1px solid #f5f5f5;
+                position: relative;
+                display: flex;
+                gap: 12px;
+                align-items: center;
+            }
+            
+            .news-item:last-child {
+                border-bottom: none;
+            }
+            
+            .news-item.new::after {
+                content: "NEW";
+                position: absolute;
+                top: 12px;
+                right: 0;
+                background: #fbbf24;
+                color: #92400e;
+                font-size: 9px;
+                font-weight: 700;
+                padding: 3px 6px;
+                border-radius: 4px;
+                letter-spacing: 0.5px;
+            }
+            
+            .news-number {
+                color: #999;
+                font-size: 13px;
+                font-weight: 600;
+                min-width: 20px;
+                text-align: center;
+                flex-shrink: 0;
+                background: #f8f9fa;
+                border-radius: 50%;
+                width: 24px;
+                height: 24px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                align-self: flex-start;
+                margin-top: 8px;
+            }
+            
+            .news-content {
+                flex: 1;
+                min-width: 0;
+                padding-right: 40px;
+            }
+            
+            .news-item.new .news-content {
+                padding-right: 50px;
+            }
+            
+            .news-header {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-bottom: 8px;
+                flex-wrap: wrap;
+            }
+            
+            .source-name {
+                color: #666;
+                font-size: 12px;
+                font-weight: 500;
+            }
+            
+            .rank-num {
+                color: #fff;
+                background: #6b7280;
+                font-size: 10px;
+                font-weight: 700;
+                padding: 2px 6px;
+                border-radius: 10px;
+                min-width: 18px;
+                text-align: center;
+            }
+            
+            .rank-num.top { background: #dc2626; }
+            .rank-num.high { background: #ea580c; }
+            
+            .time-info {
+                color: #999;
+                font-size: 11px;
+            }
+            
+            .count-info {
+                color: #059669;
+                font-size: 11px;
+                font-weight: 500;
+            }
+            
+            .news-title {
+                font-size: 15px;
+                line-height: 1.4;
+                color: #1a1a1a;
+                margin: 0;
+            }
+            
+            .news-link {
+                color: #2563eb;
+                text-decoration: none;
+            }
+            
+            .news-link:hover {
+                text-decoration: underline;
+            }
+            
+            .news-link:visited {
+                color: #7c3aed;
+            }
+            
+            .new-section {
+                margin-top: 40px;
+                padding-top: 24px;
+                border-top: 2px solid #f0f0f0;
+            }
+            
+            .new-section-title {
+                color: #1a1a1a;
+                font-size: 16px;
+                font-weight: 600;
+                margin: 0 0 20px 0;
+            }
+            
+            .new-source-group {
+                margin-bottom: 24px;
+            }
+            
+            .new-source-title {
+                color: #666;
+                font-size: 13px;
+                font-weight: 500;
+                margin: 0 0 12px 0;
+                padding-bottom: 6px;
+                border-bottom: 1px solid #f5f5f5;
+            }
+            
+            .new-item {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 8px 0;
+                border-bottom: 1px solid #f9f9f9;
+            }
+            
+            .new-item:last-child {
+                border-bottom: none;
+            }
+            
+            .new-item-number {
+                color: #999;
+                font-size: 12px;
+                font-weight: 600;
+                min-width: 18px;
+                text-align: center;
+                flex-shrink: 0;
+                background: #f8f9fa;
+                border-radius: 50%;
+                width: 20px;
+                height: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .new-item-rank {
+                color: #fff;
+                background: #6b7280;
+                font-size: 10px;
+                font-weight: 700;
+                padding: 3px 6px;
+                border-radius: 8px;
+                min-width: 20px;
+                text-align: center;
+                flex-shrink: 0;
+            }
+            
+            .new-item-rank.top { background: #dc2626; }
+            .new-item-rank.high { background: #ea580c; }
+            
+            .new-item-content {
+                flex: 1;
+                min-width: 0;
+            }
+            
+            .new-item-title {
+                font-size: 14px;
+                line-height: 1.4;
+                color: #1a1a1a;
+                margin: 0;
+            }
+            
+            .error-section {
+                background: #fef2f2;
+                border: 1px solid #fecaca;
+                border-radius: 8px;
+                padding: 16px;
+                margin-bottom: 24px;
+            }
+            
+            .error-title {
+                color: #dc2626;
+                font-size: 14px;
+                font-weight: 600;
+                margin: 0 0 8px 0;
+            }
+            
+            .error-list {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+            
+            .error-item {
+                color: #991b1b;
+                font-size: 13px;
+                padding: 2px 0;
+                font-family: 'SF Mono', Consolas, monospace;
+            }
+            
+            @media (max-width: 480px) {
+                body { padding: 12px; }
+                .header { padding: 24px 20px; }
+                .content { padding: 20px; }
+                .header-info { grid-template-columns: 1fr; gap: 12px; }
+                .news-header { gap: 6px; }
+                .news-content { padding-right: 45px; }
+                .news-item { gap: 8px; }
+                .new-item { gap: 8px; }
+                .news-number { width: 20px; height: 20px; font-size: 12px; }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <div class="header-title">热点新闻分析</div>
+                <div class="header-info">
+                    <div class="info-item">
+                        <span class="info-label">报告类型</span>
+                        <span class="info-value">实时分析</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">新闻总数</span>
+                        <span class="info-value">71 条</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">热点新闻</span>
+                        <span class="info-value">17 条</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">生成时间</span>
+                        <span class="info-value">09-17 15:40</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="content">
+                <div class="word-group">
+                    <div class="word-header">
+                        <div class="word-info">
+                            <div class="word-name">ai 人工智能</div>
+                            <div class="word-count ">4 条</div>
+                        </div>
+                        <div class="word-index">1/9</div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">1</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">营销市场新闻</span><span class="rank-num top">2</span><span class="time-info">15时40分</span>
+                            </div>
+                            <div class="news-title"><a href="https://mktnews.net/flashDetail.html?id=01995653-a50e-755e-85d3-54b6d59e0196" target="_blank" class="news-link">【Fed&#x27;s Pace on Cuts Key for Markets: Morgan Stanley】Morgan Stanley says equity markets hinge on weak U.S. jobs data and whether the Fed cuts rates quickly enough. Traders expect a 25 bp cut this week, but lingering inflation may slow the Fed’s response. The bank sees short-term consolidation in stocks but remains bullish long term, targeting the S&amp;P 500 at 7,200 by mid-2026 on strong earnings. They favor small caps and reflation plays ahead, while dip-buying into year-end.</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">2</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">V2EX技术社区</span><span class="rank-num top">2</span><span class="time-info">15时40分</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.v2ex.com/t/1159957" target="_blank" class="news-link">一个 AI 图片和视频创作平台，使用 TRAE 开发的第一个作品</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">3</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">营销市场新闻</span><span class="rank-num ">8</span><span class="time-info">15时40分</span>
+                            </div>
+                            <div class="news-title"><a href="https://mktnews.net/flashDetail.html?id=0199504c-3374-799d-bdfd-8faecb18fe94" target="_blank" class="news-link">【A Dovish Fed Guidance Could Boost Asian Equities: Eastspring Investments】A dovish guidance by Federal Reserve chair Jerome Powell at this week&#x27;s meeting could catalyse further U.S. dollar weakness, boosting Asian equities, say Vis Nayar and Ray Farris at Eastspring Investments. &quot;Asian equities market outperformance this year has come mainly from local funds, but a resumption of U.S. dollar weakness could spur foreign diversification flows out of the U.S. into emerging markets,&quot; they write in a note. Improving earnings fundamentals have also been a key driver of recently strong Asian equities, they say, with U.S. trade deals leading to higher year-ahead earnings estimates in most Asian markets. Asian markets&#x27; main risks would be if the median 2026 Fed Funds rate dot remains unchanged or if Powell downplays the outlook for cuts, they add.</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">4</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">格隆汇港股</span><span class="rank-num ">15</span><span class="time-info">15时40分</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.gelonghui.com/news/5084913" target="_blank" class="news-link">研报掘金丨华源证券：维持康冠科技“买入”评级，中期分红彰显经营信心，持续强化AI布局</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="word-group">
+                    <div class="word-header">
+                        <div class="word-info">
+                            <div class="word-name">731 七三一 新疆 十五五 海南 华为 内卷 内需 云计算 创新药 PCB 数字货币 固态电池 云计算 热点</div>
+                            <div class="word-count ">3 条</div>
+                        </div>
+                        <div class="word-index">2/9</div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">1</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">IT之家</span><span class="rank-num high">5</span><span class="time-info">15时40分</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.ithome.com/0/883/634.htm" target="_blank" class="news-link">华为发布“4+10+N”中小企业智能化方案，面向分销推出“百 &amp; 万计划”</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">2</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">格隆汇港股</span><span class="rank-num ">6</span><span class="time-info">15时40分</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.gelonghui.com/news/5084922" target="_blank" class="news-link">孚能科技(688567.SH)：已完成向某头部人形机器客户送样硫化物全固态电池</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">3</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">IT之家</span><span class="rank-num ">7</span><span class="time-info">15时40分</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.ithome.com/0/883/631.htm" target="_blank" class="news-link">华为发布面向智能世界 2035 十大技术趋势，全社会算力总量将增长 10 万倍</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="word-group">
+                    <div class="word-header">
+                        <div class="word-info">
+                            <div class="word-name">iphone ipad mac ios</div>
+                            <div class="word-count ">3 条</div>
+                        </div>
+                        <div class="word-index">3/9</div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">1</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">营销市场新闻</span><span class="rank-num top">1</span><span class="time-info">15时40分</span>
+                            </div>
+                            <div class="news-title"><a href="https://mktnews.net/flashDetail.html?id=01995689-2257-755e-85d3-c5fc1feccdbc" target="_blank" class="news-link">【🚨Fed Decision Showdown: JPMorgan Maps Out Scenarios That Could Send Stocks Soaring — or Crashing 5%】JPMorgan has mapped out how stocks could swing depending on how the Fed moves this week. Here’s the breakdown:&lt;br/&gt;&lt;b&gt;1. The “Dovish Cut” — Most Likely (47.5% chance)&lt;/b&gt;&lt;br/&gt;Fed slashes rates by 25 bps and issue dovish language.&lt;br/&gt;Immediate reaction: S&amp;P 500 pops +1% to ~6,650.&lt;br/&gt;But beware: JPMorgan warns a &lt;b&gt;sell-the-news slide&lt;/b&gt; could drag stocks down as much as &lt;b&gt;5%&lt;/b&gt; in the weeks ahead.&lt;br/&gt;Buying opportunities if that happens:&lt;br/&gt;&lt;b&gt;Mega-cap tech &amp; AI names&lt;/b&gt; — JPMorgan stays overweight.&lt;br/&gt;&lt;b&gt;Utilities&lt;/b&gt; — poised to benefit if rate expectations and 10Y yields fall.&lt;br/&gt;&lt;b&gt;2. The “Hawkish Cut” — Second Likeliest (40% chance)&lt;/b&gt;&lt;br/&gt;Fed delivers the expected 25 bps cut but signals hawkish concerns.&lt;br/&gt;S&amp;P 500 likely stalls or dips -0.5%.&lt;br/&gt;Powell could hint that the&lt;b&gt; job market is now a bigger worry than inflation&lt;/b&gt;, undercutting the rally.&lt;br/&gt;&lt;b&gt;3. The “Shock and Awe” Scenarios — Low Odds, High Volatility (11.5% chance)&lt;/b&gt;&lt;br/&gt;&lt;b&gt;No cut (4%)&lt;/b&gt;: Stocks sink 1%-2%, pushing the S&amp;P 500 toward 6,450.&lt;br/&gt;&lt;b&gt;Jumbo cut of 50 bps (7.5%)&lt;/b&gt;: Market chaos — S&amp;P 500 could&lt;b&gt; swing ±1.5%&lt;/b&gt; depending on how investors read the move.</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">2</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">营销市场新闻</span><span class="rank-num ">7</span><span class="time-info">15时40分</span>
+                            </div>
+                            <div class="news-title"><a href="https://mktnews.net/flashDetail.html?id=019950ec-6ff3-799d-bdff-0238341a68db" target="_blank" class="news-link">【Analysts Split on Cut Size Ahead of September FOMC Meeting】&lt;b&gt;Thierry Wizman (Macquarie)&lt;/b&gt;: Fed will balance downside risks to employment without signaling a long string of cuts.&lt;br/&gt;&lt;b&gt;Lon Erickson (Thornburg):&lt;/b&gt; Unlikely to see another 50-bp cut this year; inflation remains the wild card.&lt;br/&gt;&lt;b&gt;Samuel Tombs (Pantheon Macroeconomics)&lt;/b&gt;: Predicts a possible three-way split among governors, with some voting for a 50-bp cut, a majority for a smaller cut, and a few for no change.&lt;br/&gt;&lt;b&gt;Jim Caron (Morgan Stanley) and Michael Feroli (JPMorgan)&lt;/b&gt;: Fed will likely choose a smaller, measured cut rather than aggressive action.&lt;br/&gt;&lt;b&gt;Claudia Sahm (New Century Advisors)&lt;/b&gt;: Cut expected due to weak employment rather than favorable inflation; still sees inflation as “too firm.”&lt;br/&gt;&lt;b&gt;Brian Buetel (UBS Wealth Management)&lt;/b&gt;: Forecasts a 100-bp cumulative cut over the next four meetings through January 2026.&lt;br/&gt;&lt;b&gt;James Bullard (former St. Louis Fed)&lt;/b&gt;: Supports a 25-bp cut and signals further easing, noting tariffs are likely a temporary inflation influence.</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">3</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">微博热搜</span><span class="rank-num ">24</span><span class="time-info">15时40分</span>
+                            </div>
+                            <div class="news-title"><a href="https://m.weibo.cn/search?containerid=100103type%3D1%26t%3D10%26q%3DiPhone%E6%89%8B%E6%9C%BA%E5%8F%AF%E4%BB%A5%E7%94%A8%E5%A4%9A%E5%B0%91%E5%B9%B4&amp;stream_entry_id=31&amp;isnewpage=1&amp;extparam=seat%3D1%26filter_type%3Drealtimehot%26flag%3D1%26q%3DiPhone%25E6%2589%258B%25E6%259C%25BA%25E5%258F%25AF%25E4%25BB%25A5%25E7%2594%25A8%25E5%25A4%259A%25E5%25B0%2591%25E5%25B9%25B4%26band_rank%3D24%26cate%3D5001%26dgr%3D0%26pos%3D23%26lcate%3D5001%26stream_entry_id%3D31%26c_type%3D31%26realpos%3D24%26display_time%3D1758094684%26pre_seqid%3D17580946849480139473464" target="_blank" class="news-link">iPhone手机可以用多少年</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="word-group">
+                    <div class="word-header">
+                        <div class="word-info">
+                            <div class="word-name">谷歌 google gemini deepmind</div>
+                            <div class="word-count ">2 条</div>
+                        </div>
+                        <div class="word-index">4/9</div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">1</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">IT之家</span><span class="rank-num top">3</span><span class="time-info">15时40分</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.ithome.com/0/883/636.htm" target="_blank" class="news-link">GPU 加速：Win11 版谷歌 Chrome 浏览器网络会议将更流畅、更清晰、更稳定</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">2</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">IT之家</span><span class="rank-num high">4</span><span class="time-info">15时40分</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.ithome.com/0/883/635.htm" target="_blank" class="news-link">谷歌豪掷 50 亿英镑布局英国，聚焦 AI 基建、能源、科研等领域</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="word-group">
+                    <div class="word-header">
+                        <div class="word-info">
+                            <div class="word-name">京东 刘强东</div>
+                            <div class="word-count ">1 条</div>
+                        </div>
+                        <div class="word-index">5/9</div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">1</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">FastBull外汇</span><span class="rank-num ">12</span><span class="time-info">15时40分</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.fastbull.com/cn/fastshort/3668147_100_1" target="_blank" class="news-link">礼来国际总裁表示，公司已与阿里巴巴和京东运营的远程医疗平台合作，以提高中国市场对肥胖药物的认知度和销量</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="word-group">
+                    <div class="word-header">
+                        <div class="word-info">
+                            <div class="word-name">AMD</div>
+                            <div class="word-count ">1 条</div>
+                        </div>
+                        <div class="word-index">6/9</div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">1</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">IT之家</span><span class="rank-num top">2</span><span class="time-info">15时40分</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.ithome.com/0/883/637.htm" target="_blank" class="news-link">3499 元七彩虹 E14 轻薄本发布：AMD R7 7735HS 处理器，重约 1.11kg</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="word-group">
+                    <div class="word-header">
+                        <div class="word-info">
+                            <div class="word-name">机器人</div>
+                            <div class="word-count ">1 条</div>
+                        </div>
+                        <div class="word-index">7/9</div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">1</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">格隆汇港股</span><span class="rank-num ">10</span><span class="time-info">15时40分</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.gelonghui.com/news/5084918" target="_blank" class="news-link">领益智造(002600.SZ)：已经在人形机器人的机加工结构件、核心零部件、关节等模组、灵巧手零部件及组装、整机组装与应用落地开发方面具备订单</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="word-group">
+                    <div class="word-header">
+                        <div class="word-info">
+                            <div class="word-name">美国 日本 韩国</div>
+                            <div class="word-count ">1 条</div>
+                        </div>
+                        <div class="word-index">8/9</div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">1</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">FastBull外汇</span><span class="rank-num ">17</span><span class="time-info">15时40分</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.fastbull.com/cn/fastshort/3668141_100_1" target="_blank" class="news-link">礼来公司国际总裁：公司在英国、意大利、西班牙、阿联酋、日本以及“很多其他中型市场”的减肥药市场中占据领先地位，并有望在全球复制美国市场领先地位。</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="word-group">
+                    <div class="word-header">
+                        <div class="word-info">
+                            <div class="word-name">科技</div>
+                            <div class="word-count ">1 条</div>
+                        </div>
+                        <div class="word-index">9/9</div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">1</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">格隆汇港股</span><span class="rank-num high">5</span><span class="time-info">15时40分</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.gelonghui.com/news/5084923" target="_blank" class="news-link">美信科技(301577.SZ)：公司产品没有用在轴向磁通电机上</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+    </html>
+    
