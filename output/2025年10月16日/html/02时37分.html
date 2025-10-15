@@ -1,0 +1,673 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>热点新闻分析</title>
+        <style>
+            * { box-sizing: border-box; }
+            body { 
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+                margin: 0; 
+                padding: 16px; 
+                background: #fafafa;
+                color: #333;
+                line-height: 1.5;
+            }
+            
+            .container {
+                max-width: 600px;
+                margin: 0 auto;
+                background: white;
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+            }
+            
+            .header {
+                background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+                color: white;
+                padding: 32px 24px;
+                text-align: center;
+            }
+            
+            .header-title {
+                font-size: 22px;
+                font-weight: 700;
+                margin: 0 0 20px 0;
+            }
+            
+            .header-info {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 16px;
+                font-size: 14px;
+                opacity: 0.95;
+            }
+            
+            .info-item {
+                text-align: center;
+            }
+            
+            .info-label {
+                display: block;
+                font-size: 12px;
+                opacity: 0.8;
+                margin-bottom: 4px;
+            }
+            
+            .info-value {
+                font-weight: 600;
+                font-size: 16px;
+            }
+            
+            .content {
+                padding: 24px;
+            }
+            
+            .word-group {
+                margin-bottom: 40px;
+            }
+            
+            .word-group:first-child {
+                margin-top: 0;
+            }
+            
+            .word-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 20px;
+                padding-bottom: 8px;
+                border-bottom: 1px solid #f0f0f0;
+            }
+            
+            .word-info {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+            
+            .word-name {
+                font-size: 17px;
+                font-weight: 600;
+                color: #1a1a1a;
+            }
+            
+            .word-count {
+                color: #666;
+                font-size: 13px;
+                font-weight: 500;
+            }
+            
+            .word-count.hot { color: #dc2626; font-weight: 600; }
+            .word-count.warm { color: #ea580c; font-weight: 600; }
+            
+            .word-index {
+                color: #999;
+                font-size: 12px;
+            }
+            
+            .news-item {
+                margin-bottom: 20px;
+                padding: 16px 0;
+                border-bottom: 1px solid #f5f5f5;
+                position: relative;
+                display: flex;
+                gap: 12px;
+                align-items: center;
+            }
+            
+            .news-item:last-child {
+                border-bottom: none;
+            }
+            
+            .news-item.new::after {
+                content: "NEW";
+                position: absolute;
+                top: 12px;
+                right: 0;
+                background: #fbbf24;
+                color: #92400e;
+                font-size: 9px;
+                font-weight: 700;
+                padding: 3px 6px;
+                border-radius: 4px;
+                letter-spacing: 0.5px;
+            }
+            
+            .news-number {
+                color: #999;
+                font-size: 13px;
+                font-weight: 600;
+                min-width: 20px;
+                text-align: center;
+                flex-shrink: 0;
+                background: #f8f9fa;
+                border-radius: 50%;
+                width: 24px;
+                height: 24px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                align-self: flex-start;
+                margin-top: 8px;
+            }
+            
+            .news-content {
+                flex: 1;
+                min-width: 0;
+                padding-right: 40px;
+            }
+            
+            .news-item.new .news-content {
+                padding-right: 50px;
+            }
+            
+            .news-header {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-bottom: 8px;
+                flex-wrap: wrap;
+            }
+            
+            .source-name {
+                color: #666;
+                font-size: 12px;
+                font-weight: 500;
+            }
+            
+            .rank-num {
+                color: #fff;
+                background: #6b7280;
+                font-size: 10px;
+                font-weight: 700;
+                padding: 2px 6px;
+                border-radius: 10px;
+                min-width: 18px;
+                text-align: center;
+            }
+            
+            .rank-num.top { background: #dc2626; }
+            .rank-num.high { background: #ea580c; }
+            
+            .time-info {
+                color: #999;
+                font-size: 11px;
+            }
+            
+            .count-info {
+                color: #059669;
+                font-size: 11px;
+                font-weight: 500;
+            }
+            
+            .news-title {
+                font-size: 15px;
+                line-height: 1.4;
+                color: #1a1a1a;
+                margin: 0;
+            }
+            
+            .news-link {
+                color: #2563eb;
+                text-decoration: none;
+            }
+            
+            .news-link:hover {
+                text-decoration: underline;
+            }
+            
+            .news-link:visited {
+                color: #7c3aed;
+            }
+            
+            .new-section {
+                margin-top: 40px;
+                padding-top: 24px;
+                border-top: 2px solid #f0f0f0;
+            }
+            
+            .new-section-title {
+                color: #1a1a1a;
+                font-size: 16px;
+                font-weight: 600;
+                margin: 0 0 20px 0;
+            }
+            
+            .new-source-group {
+                margin-bottom: 24px;
+            }
+            
+            .new-source-title {
+                color: #666;
+                font-size: 13px;
+                font-weight: 500;
+                margin: 0 0 12px 0;
+                padding-bottom: 6px;
+                border-bottom: 1px solid #f5f5f5;
+            }
+            
+            .new-item {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 8px 0;
+                border-bottom: 1px solid #f9f9f9;
+            }
+            
+            .new-item:last-child {
+                border-bottom: none;
+            }
+            
+            .new-item-number {
+                color: #999;
+                font-size: 12px;
+                font-weight: 600;
+                min-width: 18px;
+                text-align: center;
+                flex-shrink: 0;
+                background: #f8f9fa;
+                border-radius: 50%;
+                width: 20px;
+                height: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .new-item-rank {
+                color: #fff;
+                background: #6b7280;
+                font-size: 10px;
+                font-weight: 700;
+                padding: 3px 6px;
+                border-radius: 8px;
+                min-width: 20px;
+                text-align: center;
+                flex-shrink: 0;
+            }
+            
+            .new-item-rank.top { background: #dc2626; }
+            .new-item-rank.high { background: #ea580c; }
+            
+            .new-item-content {
+                flex: 1;
+                min-width: 0;
+            }
+            
+            .new-item-title {
+                font-size: 14px;
+                line-height: 1.4;
+                color: #1a1a1a;
+                margin: 0;
+            }
+            
+            .error-section {
+                background: #fef2f2;
+                border: 1px solid #fecaca;
+                border-radius: 8px;
+                padding: 16px;
+                margin-bottom: 24px;
+            }
+            
+            .error-title {
+                color: #dc2626;
+                font-size: 14px;
+                font-weight: 600;
+                margin: 0 0 8px 0;
+            }
+            
+            .error-list {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+            
+            .error-item {
+                color: #991b1b;
+                font-size: 13px;
+                padding: 2px 0;
+                font-family: 'SF Mono', Consolas, monospace;
+            }
+            
+            @media (max-width: 480px) {
+                body { padding: 12px; }
+                .header { padding: 24px 20px; }
+                .content { padding: 20px; }
+                .header-info { grid-template-columns: 1fr; gap: 12px; }
+                .news-header { gap: 6px; }
+                .news-content { padding-right: 45px; }
+                .news-item { gap: 8px; }
+                .new-item { gap: 8px; }
+                .news-number { width: 20px; height: 20px; font-size: 12px; }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <div class="header-title">热点新闻分析</div>
+                <div class="header-info">
+                    <div class="info-item">
+                        <span class="info-label">报告类型</span>
+                        <span class="info-value">实时分析</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">新闻总数</span>
+                        <span class="info-value">74 条</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">热点新闻</span>
+                        <span class="info-value">25 条</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">生成时间</span>
+                        <span class="info-value">10-16 02:37</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="content">
+                <div class="word-group">
+                    <div class="word-header">
+                        <div class="word-info">
+                            <div class="word-name">美国 日本 韩国</div>
+                            <div class="word-count hot">13 条</div>
+                        </div>
+                        <div class="word-index">1/5</div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">1</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num top">1</span><span class="time-info">02时37分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20251016021337132800" target="_blank" class="news-link">美国国防部发言人：在参加完北约国防部长会议返回美国的途中，由于飞机挡风玻璃破裂，美国国防部长赫格塞思的飞机意外降落在英国。飞机按照标准程序降落，包括赫格塞思在内的机上所有人都很安全。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">2</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num high">4</span><span class="time-info">02时37分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20251016020809874800" target="_blank" class="news-link">据华尔街日报：美国银行因与杰弗里·爱泼斯坦的关联被起诉。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">3</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">FastBull外汇</span><span class="rank-num top">1-22</span><span class="time-info">02时37分</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.fastbull.com/cn/fastshort/3713583_100_1" target="_blank" class="news-link">美国国防部：美国国防部长赫格塞思搭乘的飞机因挡风玻璃出现裂纹在英国进行了非计划迫降，机上人员均安全。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">4</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">FastBull外汇</span><span class="rank-num ">6-27</span><span class="time-info">02时37分</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.fastbull.com/cn/fastshort/3713561_100_1" target="_blank" class="news-link">美国法官表示，她可能阻止特朗普政府在政府停摆期间进行大规模裁员。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">5</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">FastBull外汇</span><span class="rank-num ">9-30</span><span class="time-info">02时37分</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.fastbull.com/cn/fastshort/3713558_100_1" target="_blank" class="news-link">据路透调查：美国能源信息署（EIA）周四报告显示，上周美国天然气库存增加810亿立方英尺。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">6</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">FastBull外汇</span><span class="rank-num ">12</span><span class="time-info">02时37分</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.fastbull.com/cn/fastshort/3713554_100_1" target="_blank" class="news-link">美国预算主任沃特：政府部门裁员规模肯定将达到数千人。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">7</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">13</span><span class="time-info">02时37分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20251016015941087800" target="_blank" class="news-link">美国管理和预算局主任Vought：将能够在两到三个月内关闭美国消费者金融保护局（CFPB）。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">8</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">14</span><span class="time-info">02时37分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20251016015917330800" target="_blank" class="news-link">美国管理和预算局主任Vought：考虑关闭美国消费者金融保护局（CFPB）。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">9</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">19</span><span class="time-info">02时37分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20251016014758593800" target="_blank" class="news-link">美国三大股指部分转涨，标普500指数上涨0.2%，纳指上涨0.4%，道指持平。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">10</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">21</span><span class="time-info">02时37分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20251016014548513800" target="_blank" class="news-link">美国管理和预算局主任Vought：我们不希望空中交通管制员开始以“生病”为由缺勤。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">11</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">22</span><span class="time-info">02时37分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20251016014508115800" target="_blank" class="news-link">一名美国法官表示，她很可能会阻止特朗普政府在政府停摆期间实施大规模裁员。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">12</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">24</span><span class="time-info">02时37分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20251016014353798800" target="_blank" class="news-link">美国管理和预算局主任Vought：裁员人数可能超过1万人。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">13</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">25</span><span class="time-info">02时37分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20251016014339365800" target="_blank" class="news-link">美国管理和预算局主任Vought：我们确实在讨论政府裁员数千人的事宜。</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="word-group">
+                    <div class="word-header">
+                        <div class="word-info">
+                            <div class="word-name">ai 人工智能</div>
+                            <div class="word-count warm">7 条</div>
+                        </div>
+                        <div class="word-index">2/5</div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">1</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">营销市场新闻</span><span class="rank-num top">1</span><span class="time-info">02时37分</span>
+                            </div>
+                            <div class="news-title"><a href="https://mktnews.net/flashDetail.html?id=0199e90f-da74-7771-bdde-da84225f9544" target="_blank" class="news-link">【October 2025 Beige Book – Key Points】&lt;b&gt;Overall Activity:&lt;/b&gt;&lt;br/&gt;- Economic activity largely unchanged; three Districts grew slightly, five flat, four softened.&lt;br/&gt;- Retail spending down; auto sales supported by EV demand.&lt;br/&gt;- Leisure/hospitality demand fell for international travelers; luxury travel strong.&lt;br/&gt;- Manufacturing, agriculture, energy, transportation mostly weak; financial services mixed.&lt;br/&gt;- Outlook uncertain; government shutdown cited as a downside risk.&lt;br/&gt;&lt;b&gt;Labor Markets:&lt;/b&gt;&lt;br/&gt;- Employment stable; layoffs rising due to weak demand and AI investments.&lt;br/&gt;- Temporary/part-time hiring favored; labor shortages in hospitality, agriculture, construction, manufacturing.&lt;br/&gt;- Wages rising modestly; health insurance costs adding pressure.&lt;br/&gt;&lt;b&gt;Prices:&lt;/b&gt;&lt;br/&gt;- Input costs up from tariffs, imports, and service expenses.&lt;br/&gt;- Some firms absorbed costs; others passed them to customers.&lt;br/&gt;- Certain materials (steel, lumber) saw price declines due to weak demand.&lt;br/&gt;&lt;b&gt;District Highlights:&lt;/b&gt;&lt;br/&gt;- &lt;b&gt;Growing: &lt;/b&gt;Boston, Philadelphia, Richmond&lt;br/&gt;- &lt;b&gt;Flat: &lt;/b&gt;Cleveland, Atlanta, Chicago, St. Louis, Dallas&lt;br/&gt;- &lt;b&gt;Declining: &lt;/b&gt;New York, Minneapolis, Kansas City, San Francisco&lt;br/&gt;- Boston &amp; Philadelphia: modest growth, cautious optimism.&lt;br/&gt;- New York &amp; San Francisco: slight contraction; retail, real estate, and agriculture weak.&lt;br/&gt;- Cleveland &amp; Kansas City: flat/soft, but some optimism for 2026.&lt;br/&gt;- St. Louis &amp; Minneapolis: mixed; agriculture and commercial real estate weak.&lt;br/&gt;&lt;b&gt;Overall Takeaway:&lt;/b&gt;&lt;br/&gt;- Mixed regional conditions, stable employment, rising prices, modest consumer and manufacturing softness, ongoing uncertainty.</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">2</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">营销市场新闻</span><span class="rank-num top">2</span>
+                            </div>
+                            <div class="news-title"><a href="https://mktnews.net/flashDetail.html?id=0199e8fe-f3a9-7771-bdde-7af86ed134de" target="_blank" class="news-link">【Miran: End QT, Two Rate Cuts This Year, No Large Cuts】&lt;b&gt;Monetary Policy &amp; QT&lt;br/&gt;&lt;/b&gt;- &lt;b&gt;Two rate cuts this year appear realistic; large cuts (&gt;50 bps) unnecessary&lt;/b&gt;.&lt;br/&gt;- &lt;b&gt;Supports ending QT soon&lt;/b&gt;; further balance sheet reductions offer limited benefit.&lt;br/&gt;- Policy focus should shift to a&lt;b&gt; neutral stance &lt;/b&gt;rather than exact balance sheet size.&lt;br/&gt;- &lt;b&gt;Policy decisions should focus on forecasts&lt;/b&gt;, not just past data.&lt;br/&gt;- &lt;b&gt;Current policy is more restrictive&lt;/b&gt; than perceived.&lt;br/&gt;&lt;b&gt;Inflation &amp; Economy&lt;br/&gt;&lt;/b&gt;- Housing market reflects restrictive conditions despite equity market signals.&lt;br/&gt;- Goods inflation in the U.S. aligns with other countries; imported goods not rising differently.&lt;br/&gt;- &lt;b&gt;Housing and labor markets show weakness&lt;/b&gt;.&lt;br/&gt;&lt;b&gt;AI &amp; Technology&lt;br/&gt;&lt;/b&gt;- &lt;b&gt;AI could raise the neutral rate&lt;/b&gt;; productivity may rise with deregulation.&lt;br/&gt;&lt;b&gt;Trade &amp; U.S.-China Relations&lt;br/&gt;&lt;/b&gt;- China’s &lt;b&gt;rare-earth &lt;/b&gt;moves and trade tensions create &lt;b&gt;material economic risks&lt;/b&gt;.&lt;br/&gt;- Threats may&lt;b&gt; take weeks &lt;/b&gt;to impact but carry downside potential.&lt;br/&gt;- U.S.-China tensions increase &lt;b&gt;downside risks for jobs and trade&lt;/b&gt;.</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">3</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">FastBull外汇</span><span class="rank-num high">5-26</span><span class="time-info">02时37分</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.fastbull.com/cn/fastshort/3713562_100_1" target="_blank" class="news-link">美联储理事沃勒：预计人工智能相关的岗位将面临流失。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">4</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">FastBull外汇</span><span class="rank-num ">13</span><span class="time-info">02时37分</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.fastbull.com/cn/fastshort/3713542_100_1" target="_blank" class="news-link">美联储理事沃勒：人工智能创造的新岗位取代旧岗位可能还需要几年时间。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">5</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">15</span><span class="time-info">02时37分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20251016015840392800" target="_blank" class="news-link">达利欧：欢迎大家留下有关黄金等看法的疑问 正在利用此训练AI克隆体</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">6</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">26</span><span class="time-info">02时37分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20251016014130780800" target="_blank" class="news-link">高盛总裁沃尔德伦：现在判断人工智能繁荣是否是泡沫还为时过早。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">7</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">30</span><span class="time-info">02时37分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20251016013320437800" target="_blank" class="news-link">美联储理事沃勒：可能还需要再过几年，我们才能看到人工智能取代传统岗位所带来的新增就业。</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="word-group">
+                    <div class="word-header">
+                        <div class="word-info">
+                            <div class="word-name">claude Anthropic</div>
+                            <div class="word-count ">3 条</div>
+                        </div>
+                        <div class="word-index">3/5</div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">1</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Hacker News</span><span class="rank-num ">7</span><span class="time-info">02时37分</span>
+                            </div>
+                            <div class="news-title"><a href="https://news.ycombinator.com/item?id=45596168" target="_blank" class="news-link">Claude Haiku 4.5 System Card [pdf]</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">2</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">27</span><span class="time-info">02时37分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20251016013752369800" target="_blank" class="news-link">知情人士：Anthropic的目标是在2026年实现年化收入几乎翻三倍</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">3</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">29</span><span class="time-info">02时37分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20251016013502898800" target="_blank" class="news-link">亚马逊(AMZN.O)：来自Anthropic的Claude 4模型现已在亚马逊Bedrock平台上上线。</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="word-group">
+                    <div class="word-header">
+                        <div class="word-info">
+                            <div class="word-name">chatgpt openai sora</div>
+                            <div class="word-count ">1 条</div>
+                        </div>
+                        <div class="word-index">4/5</div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">1</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Hacker News</span><span class="rank-num ">29</span><span class="time-info">02时37分</span>
+                            </div>
+                            <div class="news-title"><a href="https://news.ycombinator.com/item?id=45557504" target="_blank" class="news-link">ChatGPT – Truth over Comfort Instruction Set</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="word-group">
+                    <div class="word-header">
+                        <div class="word-info">
+                            <div class="word-name">国产 中国</div>
+                            <div class="word-count ">1 条</div>
+                        </div>
+                        <div class="word-index">5/5</div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">1</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">百度热搜</span><span class="rank-num ">27</span><span class="time-info">02时37分</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.baidu.com/s?wd=%E8%A5%BF%E7%8F%AD%E7%89%99%E5%A4%9A%E5%90%8D%E4%B8%AD%E5%9B%BD%E5%85%AC%E6%B0%91%E9%81%AD%E6%8C%81%E6%A2%B0%E6%8A%A2%E5%8A%AB" target="_blank" class="news-link">西班牙多名中国公民遭持械抢劫</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+    </html>
+    
